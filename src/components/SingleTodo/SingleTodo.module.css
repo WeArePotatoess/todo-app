@@ -1,0 +1,40 @@
+.single_todo {
+    font-size: 18px;
+    display: flex;
+    gap: 3px;
+    text-align: start;
+    z-index: 2;
+    width: 100%;
+    border-bottom: 1px solid #b4530942;
+    padding-bottom: .5rem;
+}
+
+.single_todo div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 95%;
+    z-index: 1;
+}
+
+.single_todo svg {
+    display: none;
+    color: #B45309;
+}
+.single_todo:hover svg{
+    display: block;
+}
+
+.single_todo::before {
+    counter-increment: item;
+    content: counter(item)". ";
+}
+
+.todo_task {
+    color: #000;
+}
+
+.done_task {
+    color: #9CA3AF;
+    text-decoration: line-through;
+}
