@@ -1,21 +1,31 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import './App.css';
 import SingleTodo from './components/SingleTodo'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 function App() {
-  const [taskName, setTaskName] = useState('');
+  const [taskName, setTaskName] = useState("");
   const [taskList, setTaskList] = useState(window.localStorage.getItem('taskList')
     ? JSON.parse(window.localStorage.getItem('taskList')) : []);
   const inputRef = useRef(null);
+  const selectRef = useRef(null);
 
-  const [filteredTasks, setFilteredTasks] = useState([]);
-
+  const [filteredTasks, setFilteredTasks] = useState(taskList);
+  const handleFilter = useCallback(() => {
+    const filterValue = selectRef.current.value;
+    if (filterValue === 'none') {
+      setFilteredTasks([...taskList]);
+    }
+    else {
+      setFilteredTasks(taskList.filter(task => task.completed === Boolean(+filterValue)))
+    }
+  }, [taskList])
   useEffect(() => {
     window.localStorage.setItem('taskList',
       JSON.stringify(taskList));
-  }, [taskList])
+    handleFilter();
+  }, [taskList, handleFilter])
 
   const handleInput = (e) => {
     setTaskName(e.target.value);
@@ -31,8 +41,16 @@ function App() {
       window.localStorage.setItem('taskList', JSON.stringify(taskList));
       inputRef.current.value = '';
       setTaskName('');
-      console.log(taskList);
     }
+  }
+
+  function handleChangeStat(id) {
+    setTaskList(taskList.map(task => {
+      if (task.id === id) {
+        task.completed = !task.completed;
+      }
+      return task
+    }))
   }
 
   function removeTask(taskId) {
@@ -41,13 +59,7 @@ function App() {
       setTaskList(taskList.filter(task => task.id !== taskId))
   }
 
-  function handleFilter(e) {
-    const filterValue = e.target.value;
-    if (filterValue === 'none') {
 
-    }
-    console.log(e.target.value)
-  }
 
   return (
     <div className="App">
@@ -55,7 +67,7 @@ function App() {
       <p>Fill the input and click button or "Enter" to add a new task into the list.
         To mark as completed, just click directly to the task</p>
       <div className='input-container'>
-        <input type="text" ref={inputRef
+        <input type="text" value={taskName} ref={inputRef
         } onChange={handleInput} onKeyDown={
           (e) => {
             if (e.key === 'Enter') handleSubmit(e);
@@ -68,15 +80,15 @@ function App() {
       <div className='todo-list-container'>
         <div className='todo-list-header'>
           <span>List</span>
-          <select id='filter' onChange={handleFilter}>
+          <select id='filter' ref={selectRef} onChange={handleFilter}>
             <option value={'none'}>All</option>
-            <option value={'todo'}>To Do</option>
-            <option value={'done'}>Done</option>
+            <option value={0}>To Do</option>
+            <option value={1}>Done</option>
           </select>
         </div>
         <ul className='todo-list'>
-          {taskList.map((task) => {
-            return <SingleTodo task={task} removeTask={removeTask} key={task.id} />;
+          {filteredTasks.map((task) => {
+            return <SingleTodo task={task} removeTask={removeTask} handleChangeStat={handleChangeStat} key={task.id} />;
           })}
         </ul>
       </div>

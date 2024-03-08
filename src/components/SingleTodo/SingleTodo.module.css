@@ -7,6 +7,7 @@
     width: 100%;
     border-bottom: 1px solid #b4530942;
     padding-bottom: .5rem;
+    cursor: pointer;
 }
 
 .single_todo div {
