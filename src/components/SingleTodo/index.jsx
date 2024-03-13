@@ -12,7 +12,7 @@ export default function index({ task, removeTask, handleChangeStat }) {
         }
     }
     return (
-        <li
+        <li 
             onClick={changeStat}
             className={`${style.single_todo} ${task.completed ? style.done_task : style.todo_task}`}
         >
